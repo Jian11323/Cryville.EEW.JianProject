@@ -1,55 +1,50 @@
+using Cryville.EEW.ComponentModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net.WebSockets;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cryville.EEW.JianProject {
-	public sealed class JianWsWorker : WebSocketWorker, ISourceWorker {
-		static readonly string[] ListCommands = { "cenclist", "cwalist", "jmalist", "hkolist" };
-
-		readonly HashSet<string>? _filter;
+	public sealed class JianWsWorker : WebSocketWorker, ISourceWorker, IPropertiesHolder {
+		readonly string _credential;
+		readonly Action<string>? _saveRefresh;
 		readonly Dictionary<string, string> _seen = new();
-		Timer? _listTimer;
+		ISet<JianSource> _filter = JianSources.DefaultAll();
 
-		public JianWsWorker(Uri uri, string? filter) : base(uri) {
-			_filter = ParseFilter(filter);
+		public JianWsWorker(Uri uri, string credential, Action<string>? saveRefresh) : base(uri) {
+			_credential = credential;
+			_saveRefresh = saveRefresh;
 		}
+
+		[Obsolete("Filter is always whitelist.")]
+		[Browsable(false)]
+		public bool IsFilterWhitelist { get; set; }
+
+		[LocalizableDisplayName("PNFilter")]
+		[LocalizableDescription("PDFilter")]
+		[SuppressMessage("Usage", "CA2227", Justification = "Component property")]
+		public ISet<JianSource> Filter {
+			get => _filter;
+			set => _filter = value ?? new HashSet<JianSource>();
+		}
+
+		public IEnumerable<PropertyDescriptor> GetProperties() =>
+			TypeDescriptor.GetProperties(this).OfType<PropertyDescriptor>().Where(p => p.IsBrowsable && !p.IsReadOnly);
+
+		protected override Uri GetUri() => WithKey(InitialUri, JianAuth.AccessFor(_credential, _saveRefresh));
 
 		public string? GetName([NotNull] ref CultureInfo? culture) => SharedResources.SourceName(ref culture);
 
 		public event Handler<object?>? Received;
 		public event Handler<Heartbeat>? Heartbeat;
 		public event Handler<Exception>? ErrorEmitted;
-
-		protected override async Task OnConnected(CancellationToken cancellationToken) {
-			await SendListsAsync(cancellationToken).ConfigureAwait(false);
-			_listTimer?.Dispose();
-			_listTimer = new Timer(_ => {
-				_ = SendListsSafeAsync(CancellationToken.None);
-			}, null, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(60));
-		}
-
-		async Task SendListsSafeAsync(CancellationToken cancellationToken) {
-			try {
-				await SendListsAsync(cancellationToken).ConfigureAwait(false);
-			}
-			catch (Exception ex) when (ex is not OperationCanceledException) {
-				ErrorEmitted?.Invoke(this, ex);
-			}
-		}
-
-		async Task SendListsAsync(CancellationToken cancellationToken) {
-			foreach (var cmd in ListCommands) {
-				using var stream = new MemoryStream(Encoding.UTF8.GetBytes(cmd));
-				await SendAsync(stream, WebSocketMessageType.Text, cancellationToken).ConfigureAwait(false);
-			}
-		}
 
 		protected override async Task Handle(Stream stream, WebSocketMessageType messageType, CancellationToken cancellationToken) {
 			if (messageType != WebSocketMessageType.Text) {
@@ -70,38 +65,30 @@ namespace Cryville.EEW.JianProject {
 			}
 		}
 
-		bool Accept(string agency) {
-			if (_filter == null) {
-				return true;
+		bool Accept(string agency) => JianSources.Allows(_filter, agency);
+
+		static Uri WithKey(Uri uri, string key) {
+			var builder = new UriBuilder(uri);
+			var query = builder.Query;
+			if (query.StartsWith("?", StringComparison.Ordinal)) {
+				query = query.Substring(1);
 			}
-			var key = agency.Trim().ToLowerInvariant();
-			if (_filter.Contains(key)) {
-				return true;
+			var parts = new List<string>();
+			if (query.Length > 0) {
+				foreach (var part in query.Split('&')) {
+					if (part.Length == 0 || part.StartsWith("key=", StringComparison.Ordinal)) {
+						continue;
+					}
+					parts.Add(part);
+				}
 			}
-			var head = key.Split(':')[0];
-			return _filter.Contains(head);
+			parts.Add("key=" + Uri.EscapeDataString(key));
+			builder.Query = string.Join("&", parts);
+			return builder.Uri;
 		}
 
 		protected override void OnHeartbeat() => Heartbeat?.Invoke(this, EEW.Heartbeat.Instance);
 		protected override void OnError(Exception ex) => ErrorEmitted?.Invoke(this, ex);
 
-		protected override void Dispose(bool disposing) {
-			if (disposing) {
-				_listTimer?.Dispose();
-				_listTimer = null;
-			}
-			base.Dispose(disposing);
-		}
-
-		static HashSet<string>? ParseFilter(string? filter) {
-			if (string.IsNullOrWhiteSpace(filter)) {
-				return null;
-			}
-			var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (var part in filter.Split(new[] { ',', ';', ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries)) {
-				set.Add(part.Trim().ToLowerInvariant());
-			}
-			return set.Count == 0 ? null : set;
-		}
 	}
 }

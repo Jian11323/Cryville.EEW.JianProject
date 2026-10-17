@@ -37,18 +37,6 @@ namespace Cryville.EEW.JianProject {
 			}
 
 			if (type != null && type.EndsWith("list_response", StringComparison.Ordinal)) {
-				var agency = AgencyFromListResponse(type);
-				if (root.TryGetProperty("Data", out var arr) && arr.ValueKind == JsonValueKind.Array) {
-					foreach (var item in arr.EnumerateArray()) {
-						if (item.ValueKind != JsonValueKind.Object) {
-							continue;
-						}
-						var evt = Map(agency, item);
-						if (evt != null && (accept == null || accept(evt.Agency))) {
-							yield return evt;
-						}
-					}
-				}
 				yield break;
 			}
 
@@ -67,7 +55,7 @@ namespace Cryville.EEW.JianProject {
 
 		static JianEvent? Map(string agency, JsonElement data) {
 			agency = NormalizeAgency(agency, data);
-			if (agency.Length == 0 || IsStationFeed(agency)) {
+			if (agency.Length == 0 || IsStationFeed(agency) || SkipAgency(agency)) {
 				return null;
 			}
 			if (Flag(data, "isTraining", "is_training", "training")) {
@@ -75,7 +63,9 @@ namespace Cryville.EEW.JianProject {
 			}
 
 			var kind = Classify(agency);
+			var placeZh = FirstText(data, "placename_zh", "placeName_zh", "place_name_zh");
 			var place = FirstText(data, "placeName", "Hypocenter", "hypocenter", "place", "epicenter", "location", "Place");
+			var forward = FirstText(data, "agency");
 			var title = FirstText(data, "title", "Title", "headline");
 			var infoType = FirstText(data, "infoTypeName", "infoType", "alertflg");
 			var magnitude = Num(data, "magnitude", "Magunitude", "Magnitude");
@@ -105,7 +95,7 @@ namespace Cryville.EEW.JianProject {
 				agency, unit, serial?.ToString(CultureInfo.InvariantCulture) ?? "",
 				cancel ? "1" : "0", final ? "1" : "0",
 				Fmt(magnitude), Fmt(depth), Fmt(latitude), Fmt(longitude),
-				place ?? "", title ?? "", intensity ?? "", infoType ?? "", detail ?? "");
+				place ?? "", placeZh ?? "", forward ?? "", title ?? "", intensity ?? "", infoType ?? "", detail ?? "");
 
 			return new JianEvent {
 				Kind = kind,
@@ -116,6 +106,8 @@ namespace Cryville.EEW.JianProject {
 				IsFinal = final,
 				IsAssumption = assumption,
 				Place = place,
+				PlaceZh = placeZh,
+				ForwardAgency = forward,
 				Title = title,
 				InfoType = infoType,
 				Magnitude = magnitude,
@@ -143,13 +135,10 @@ namespace Cryville.EEW.JianProject {
 		static JianKind Classify(string agency) {
 			var a = agency.Trim().ToLowerInvariant().Replace('_', '-');
 			var head = a.Split(':')[0];
-			if (head is "jma-tsunami" or "cwa-tsunami" or "nmefc-tsunami" || head.EndsWith("-tsunami", StringComparison.Ordinal)) {
+			if (head == "jma-tsunami") {
 				return JianKind.Tsunami;
 			}
-			if (head == "weather") {
-				return JianKind.Weather;
-			}
-			if (head is "jma-eew" or "cea" or "cea-pr" or "cwa-eew" or "sa" or "kma-eew" or "early-est" or "earlyest"
+			if (head is "jma-eew" or "cea" or "cea-pr" or "cwa-eew" or "sa" or "kma-eew"
 				|| head.EndsWith("-eew", StringComparison.Ordinal)
 				|| head.StartsWith("cea-pr", StringComparison.Ordinal)) {
 				return JianKind.EarlyWarning;
@@ -161,11 +150,22 @@ namespace Cryville.EEW.JianProject {
 		}
 
 		static bool IsKnownBulletin(string head) => head is
-			"cenc" or "cenc-ir" or "ningxia" or "yunnan" or "shanxi" or "beijing" or "cwa" or "jma" or "hko"
+			"cenc" or "cenc-fjdzj" or "ningxia" or "yunnan" or "shanxi" or "beijing" or "cwa" or "jma" or "hko"
 			or "kma" or "tmd" or "mmd" or "bmkg" or "geonet" or "usgs" or "emsc" or "gfz" or "bcsf" or "ingv"
 			or "usp" or "nrcan" or "afad" or "ipma" or "noa" or "sed" or "scsn" or "ipgp" or "infp" or "isc"
 			or "knmi" or "ncedc" or "lmu" or "koeri" or "gsras" or "csn" or "phivolcs" or "ssn" or "ga"
-			or "igepn" or "cenc-fjdzj";
+			or "igepn" or "peru";
+
+		static bool SkipAgency(string agency) {
+			var head = agency.Trim().ToLowerInvariant().Replace('_', '-').Split(':')[0];
+			if (head is "weather" or "early-est" or "earlyest" or "cenc-ir") {
+				return true;
+			}
+			if (head.Contains("volcano")) {
+				return true;
+			}
+			return head.EndsWith("-tsunami", StringComparison.Ordinal) && head != "jma-tsunami";
+		}
 
 		static bool IsStationFeed(string type) {
 			var a = type.Trim().ToLowerInvariant();
@@ -186,12 +186,6 @@ namespace Cryville.EEW.JianProject {
 			}
 			idx = key.IndexOf(':');
 			return idx >= 0 && idx + 1 < key.Length ? key.Substring(idx + 1) : key;
-		}
-
-		static string AgencyFromListResponse(string type) {
-			const string suffix = "list_response";
-			var body = type.Substring(0, type.Length - suffix.Length);
-			return body.EndsWith("_", StringComparison.Ordinal) ? body.Substring(0, body.Length - 1) : body;
 		}
 
 		static string BuildUnit(string agency, DateTime? origin, double? lat, double? lon, string? place, string? title) {

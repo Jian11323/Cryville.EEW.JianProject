@@ -13,13 +13,21 @@ namespace Cryville.EEW.JianProject {
 			var res = lres.RootMessageStringSet;
 			var titleKey = TitleKey(e);
 			var result = new ReportModel {
-				Source = string.Format(culture, res.GetStringRequired("SourceNameTyped"), e.Agency),
+				Source = JianSources.AuthorityLabel(culture, e.Agency, e.ForwardAgency),
 				Title = res.GetStringRequired(titleKey),
-				Location = e.Place ?? e.Title,
-				LocationSpecificity = e.Latitude != null && e.Longitude != null ? 12 : (e.Place != null ? 8 : 0),
 				TimeZone = TimeZoneInfo.Utc,
 				UtcIssueTime = DateTime.UtcNow,
 			};
+			if (e.Latitude is double nameLat && e.Longitude is double nameLon) {
+				context.NameLocationTo(result, nameLat, nameLon, SharedCultures.Get("zh-CN"), culture);
+			}
+			if (result.Location == null) {
+				var fallback = e.PlaceZh ?? e.Place ?? e.Title;
+				if (!string.IsNullOrEmpty(fallback)) {
+					result.Location = fallback;
+					result.LocationSpecificity = e.PlaceZh != null ? 3 : 8;
+				}
+			}
 
 			if (e.OriginUtc is DateTime origin) {
 				result.Time = new DateTimeOffset(DateTime.SpecifyKind(origin, DateTimeKind.Utc));
@@ -42,13 +50,24 @@ namespace Cryville.EEW.JianProject {
 					(float)lat, (float)lon, DateTime.SpecifyKind(hypoTime, DateTimeKind.Utc), (float)mag, (float)depth));
 			}
 
+			// Intensity first: list card left block uses the key property color from SeverityScheme.
+			if (!string.IsNullOrEmpty(e.Intensity)) {
+				var intensityKey = JianIntensity.KeyForAgency(e.Agency);
+				result.Properties.Add(new(
+					intensityKey,
+					res.GetStringRequired("PropertyIntensity"),
+					e.Intensity,
+					context.SeverityScheme,
+					JianIntensity.RawValue(intensityKey, e.Intensity)) { AccuracyOrder = 30 });
+			}
+
 			if (e.Magnitude is double magnitude) {
 				result.Properties.Add(new(
 					"Magnitude",
 					res.GetStringRequired("PropertyMagnitude"),
 					magnitude.ToString("0.0", culture),
 					context.SeverityScheme,
-					magnitude) { AccuracyOrder = 90 });
+					magnitude) { AccuracyOrder = 30 });
 			}
 
 			if (e.DepthKm is double depthKm) {
@@ -57,16 +76,7 @@ namespace Cryville.EEW.JianProject {
 					res.GetStringRequired("PropertyDepth"),
 					string.Format(culture, res.GetStringRequired("PropertyDepthValue"), depthKm.ToString("0.0", culture)),
 					context.SeverityScheme,
-					depthKm) { AccuracyOrder = 80 });
-			}
-
-			if (!string.IsNullOrEmpty(e.Intensity)) {
-				result.Properties.Add(new(
-					"Intensity",
-					res.GetStringRequired("PropertyIntensity"),
-					e.Intensity,
-					context.SeverityScheme,
-					e.Intensity) { AccuracyOrder = 85 });
+					depthKm) { AccuracyOrder = 30 });
 			}
 
 			if (e.Serial is int serial) {
@@ -78,16 +88,7 @@ namespace Cryville.EEW.JianProject {
 					serial) { AccuracyOrder = 40 });
 			}
 
-			if (!string.IsNullOrEmpty(e.InfoType)) {
-				result.Properties.Add(new(
-					"InfoType",
-					res.GetStringRequired("PropertyInfoType"),
-					e.InfoType,
-					context.SeverityScheme,
-					e.InfoType) { AccuracyOrder = 30 });
-			}
-
-			if (!string.IsNullOrEmpty(e.Detail) && e.Detail != e.Place && e.Detail != e.Title) {
+			if (!string.IsNullOrEmpty(e.Detail) && e.Detail != e.Place && e.Detail != e.Title && e.Detail != e.PlaceZh) {
 				result.Predicate = e.Detail;
 			}
 			else if (e.IsAssumption) {

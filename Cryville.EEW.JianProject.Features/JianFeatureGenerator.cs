@@ -30,11 +30,9 @@ namespace Cryville.EEW.JianProject.Features {
 				feature[Subject] = kind;
 			}
 
-			if (!string.IsNullOrEmpty(e.Place)) {
-				feature[Name] = e.Place;
-			}
-			else if (!string.IsNullOrEmpty(e.Title)) {
-				feature[Name] = e.Title;
+			var placeName = PlaceName(e);
+			if (placeName != null) {
+				feature[Name] = placeName;
 			}
 
 			if (!string.IsNullOrEmpty(e.Detail)) {
@@ -64,27 +62,27 @@ namespace Cryville.EEW.JianProject.Features {
 			}
 
 			if (!string.IsNullOrEmpty(e.Intensity)) {
-				feature[IntensityKey(e.Agency)] = e.Intensity;
+				var intensityKey = JianIntensity.KeyForAgency(e.Agency);
+				feature[intensityKey] = JianIntensity.RawValue(intensityKey, e.Intensity);
 			}
 
 			return feature;
 		}
 
-		static TagTypeKey IntensityKey(string agency) {
-			var a = agency.ToLowerInvariant();
-			if (a.StartsWith("jma")) {
-				return IntensityJMA;
+		static object? PlaceName(JianEvent e) {
+			var zh = e.PlaceZh;
+			var en = e.Place ?? e.Title;
+			if (string.IsNullOrEmpty(zh) && string.IsNullOrEmpty(en)) {
+				return null;
 			}
-			if (a.StartsWith("cwa")) {
-				return IntensityCWASIS;
+			var names = new LocalizableCollection<string>();
+			if (!string.IsNullOrEmpty(zh)) {
+				names.Add(new Localized<string>(zh, SharedCultures.Get("zh-CN")));
 			}
-			if (a.Contains("cenc") || a.StartsWith("cea") || a.StartsWith("beijing")) {
-				return IntensityCSIS;
+			if (!string.IsNullOrEmpty(en) && en != zh) {
+				names.Add(new Localized<string>(en, SharedCultures.Get("en-US")));
 			}
-			if (a is "usgs" or "sa" || a.StartsWith("sa")) {
-				return IntensityMMI;
-			}
-			return Intensity;
+			return names;
 		}
 	}
 }

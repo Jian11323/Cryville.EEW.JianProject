@@ -22,6 +22,8 @@ namespace Cryville.EEW.JianProject {
 		public bool IsTraining { get; init; }
 		public bool IsAssumption { get; init; }
 		public string? Place { get; init; }
+		public string? PlaceZh { get; init; }
+		public string? ForwardAgency { get; init; }
 		public string? Title { get; init; }
 		public string? InfoType { get; init; }
 		public double? Magnitude { get; init; }

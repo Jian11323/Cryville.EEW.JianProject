@@ -2,14 +2,14 @@ using Cryville.Common.Compat;
 using Cryville.EEW.ComponentModel;
 using Cryville.EEW.Report;
 using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace Cryville.EEW.JianProject {
 	[Export(typeof(IBuilder<ISourceWorker>))]
-	public sealed class JianWsWorkerBuilder : IBuilder<JianWsWorker> {
+	public sealed class JianWsWorkerBuilder : IBuilder<JianWsWorker>, INotifyPropertyChanged {
 		public string? GetName([NotNull] ref CultureInfo? culture) => SharedResources.SourceName(ref culture);
 
 		[JsonSerializedProperty]
@@ -21,10 +21,7 @@ namespace Cryville.EEW.JianProject {
 		[LocalizableDescription("PDAccessKey")]
 		public string? AccessKey { get; set; }
 
-		[JsonSerializedProperty]
-		[LocalizableDisplayName("PNFilter")]
-		[LocalizableDescription("PDFilter")]
-		public string? Filter { get; set; }
+		public event PropertyChangedEventHandler? PropertyChanged;
 
 		public JianWsWorker Build(ref CultureInfo? culture) {
 			ThrowHelper.ThrowIfNull(WebSocketUri);
@@ -33,29 +30,15 @@ namespace Cryville.EEW.JianProject {
 				throw new SourceWorkerClientException("Invalid WebSocket URI: " + WebSocketUri);
 			}
 			if (string.IsNullOrWhiteSpace(AccessKey)) {
-				throw new SourceWorkerClientException("Access key (at_) is required.");
+				throw new SourceWorkerClientException("访问票不能为空。");
 			}
-			return new JianWsWorker(WithKey(baseUri, AccessKey.Trim()), Filter);
-		}
-
-		static Uri WithKey(Uri uri, string key) {
-			var builder = new UriBuilder(uri);
-			var query = builder.Query;
-			if (query.StartsWith("?", StringComparison.Ordinal)) {
-				query = query.Substring(1);
-			}
-			var parts = new List<string>();
-			if (query.Length > 0) {
-				foreach (var part in query.Split('&')) {
-					if (part.Length == 0 || part.StartsWith("key=", StringComparison.Ordinal)) {
-						continue;
-					}
-					parts.Add(part);
+			return new JianWsWorker(baseUri, AccessKey.Trim(), refresh => {
+				if (string.Equals(AccessKey, refresh, StringComparison.Ordinal)) {
+					return;
 				}
-			}
-			parts.Add("key=" + Uri.EscapeDataString(key));
-			builder.Query = string.Join("&", parts);
-			return builder.Uri;
+				AccessKey = refresh;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AccessKey)));
+			});
 		}
 	}
 

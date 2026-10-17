@@ -3,7 +3,7 @@
 	"Strings": {
 		"$ExtensionDesc": "用于生成 Jian Project API 语音消息的组件。",
 		"$ExtensionName": "Jian Project TTS组件",
-		"TitleBulletin": "地震速报",
+		"TitleBulletin": "地震信息",
 		"TitleCancel": "取消报",
 		"TitleEew": "地震预警",
 		"TitleOther": "灾害情报",

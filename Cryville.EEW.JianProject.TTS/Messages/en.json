@@ -3,7 +3,7 @@
 	"Strings": {
 		"$ExtensionDesc": "Component that generates Jian Project API voice messages.",
 		"$ExtensionName": "Jian Project TTS",
-		"TitleBulletin": "Earthquake bulletin. ",
+		"TitleBulletin": "Earthquake information. ",
 		"TitleCancel": "Cancellation. ",
 		"TitleEew": "Earthquake early warning. ",
 		"TitleOther": "Hazard report. ",

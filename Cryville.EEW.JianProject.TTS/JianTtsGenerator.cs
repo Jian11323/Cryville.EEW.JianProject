@@ -12,13 +12,11 @@ namespace Cryville.EEW.JianProject.TTS {
 			var res = lres.RootMessageStringSet;
 
 			var spoken = new StringBuilder();
-			spoken.Append(string.Format(culture, res.GetStringRequired("TtsLead"), e.Agency));
+			spoken.Append(string.Format(culture, res.GetStringRequired("TtsLead"), JianSources.AuthorityLabel(culture, e.Agency, e.ForwardAgency)));
 			spoken.Append(res.GetStringRequired(TitleKey(e)));
-			if (!string.IsNullOrEmpty(e.Place)) {
-				spoken.Append(string.Format(culture, res.GetStringRequired("TtsPlace"), e.Place));
-			}
-			else if (!string.IsNullOrEmpty(e.Title)) {
-				spoken.Append(string.Format(culture, res.GetStringRequired("TtsPlace"), e.Title));
+			var place = e.PlaceZh ?? e.Place ?? e.Title;
+			if (!string.IsNullOrEmpty(place)) {
+				spoken.Append(string.Format(culture, res.GetStringRequired("TtsPlace"), place));
 			}
 			if (e.Magnitude is double mag) {
 				spoken.Append(string.Format(culture, res.GetStringRequired("TtsMagnitude"), mag.ToString("0.0", culture)));
