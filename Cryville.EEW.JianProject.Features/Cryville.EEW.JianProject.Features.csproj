@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Version>0.1.0</Version>
+    <IsExtensionProject>true</IsExtensionProject>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>Cryville.EEW.JianProject.Features</RootNamespace>
+    <AssemblyName>Cryville.EEW.JianProject.Features</AssemblyName>
+    <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
+    <Description>用于生成 Jian Project API 事件详情的组件。</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cryville.EEW" Version="0.8.7" PrivateAssets="contentfiles;analyzers;build;runtime" ExcludeAssets="runtime" />
+    <PackageReference Include="Cryville.EEW.Features" Version="0.8.1" PrivateAssets="contentfiles;analyzers;build;runtime" ExcludeAssets="runtime" />
+    <PackageReference Include="Cryville.EEW.Measure" Version="0.8.1" PrivateAssets="contentfiles;analyzers;build;runtime" ExcludeAssets="runtime" />
+    <PackageReference Include="Cryville.EEW.TagTypeKeys" Version="0.8.1" PrivateAssets="contentfiles;analyzers;build;runtime" ExcludeAssets="runtime" />
+    <PackageReference Include="Cryville.EEW.Analyzer" Version="0.8.0" PrivateAssets="contentfiles;analyzers;build;runtime" ExcludeAssets="runtime" />
+    <PackageReference Include="Cryville.Measure" Version="0.8.0" PrivateAssets="contentfiles;analyzers;build;runtime" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cryville.EEW.JianProject\Cryville.EEW.JianProject.csproj" Private="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE.txt" Link="LICENSE.txt" />
+  </ItemGroup>
+
+</Project>

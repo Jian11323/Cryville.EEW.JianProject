@@ -1,0 +1,29 @@
+{
+	"Culture": "zh-CN",
+	"Strings": {
+		"$ExtensionDesc": "用于接收及处理 Jian Project API 来源的信息的核心组件。",
+		"$ExtensionName": "Jian Project事件源组件",
+		"Assumption": "假定震源",
+		"PDAccessKey": "连接 /all 所需的 at_ 访问票。票只保存在本机配置中。",
+		"PDFilter": "要接收的机构 ID，逗号分隔。留空表示接收全部数据源。",
+		"PNAccessKey": "访问票",
+		"PNFilter": "筛选项",
+		"PNWebSocketUri": "WebSocket 地址",
+		"PropertyDepth": "震源深度",
+		"PropertyDepthValue": "{0}千米",
+		"PropertyInfoType": "情报类型",
+		"PropertyIntensity": "最大震度",
+		"PropertyMagnitude": "震级",
+		"PropertySerial": "报数",
+		"SourceName": "Jian Project",
+		"SourceNameTyped": "Jian Project（{0}）",
+		"TitleBulletin": "地震速报",
+		"TitleCancel": "取消报",
+		"TitleEew": "地震预警",
+		"TitleEewUpdate": "地震预警更新",
+		"TitleOther": "灾害情报",
+		"TitleTsunami": "海啸情报",
+		"TitleTsunamiCancel": "海啸情报解除",
+		"TitleWeather": "气象预警"
+	}
+}

@@ -1,0 +1,29 @@
+{
+	"Culture": "en",
+	"Strings": {
+		"$ExtensionDesc": "Core component that receives and processes Jian Project API events.",
+		"$ExtensionName": "Jian Project event source",
+		"Assumption": "Assumed hypocenter",
+		"PDAccessKey": "at_ access token required by /all. The token stays in the local configuration.",
+		"PDFilter": "Agency ids to receive, separated by commas. Leave empty to receive every source.",
+		"PNAccessKey": "Access token",
+		"PNFilter": "Filter",
+		"PNWebSocketUri": "WebSocket URI",
+		"PropertyDepth": "Depth",
+		"PropertyDepthValue": "{0} km",
+		"PropertyInfoType": "Info type",
+		"PropertyIntensity": "Max intensity",
+		"PropertyMagnitude": "M",
+		"PropertySerial": "Serial",
+		"SourceName": "Jian Project",
+		"SourceNameTyped": "Jian Project ({0})",
+		"TitleBulletin": "Earthquake bulletin",
+		"TitleCancel": "Cancellation",
+		"TitleEew": "Earthquake early warning",
+		"TitleEewUpdate": "Warning update",
+		"TitleOther": "Hazard report",
+		"TitleTsunami": "Tsunami information",
+		"TitleTsunamiCancel": "Tsunami cancellation",
+		"TitleWeather": "Weather warning"
+	}
+}
