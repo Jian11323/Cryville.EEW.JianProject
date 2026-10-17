@@ -1,6 +1,8 @@
 # Jian Project API（CysTerra）
 
-订阅 `wss://api.sismotide.top/all`。协议 LGPL-3.0。扩展只在 CysTerra 通用版可用，说明见 [开发文档](https://docs.eew.cryville.world/) 与 [打包](https://docs.eew.cryville.world/docs/packaging.html#versioning)。
+订阅 `wss://api.sismotide.top/all`。扩展只在 CysTerra 通用版可用，说明见 [开发文档](https://docs.eew.cryville.world/) 与 [打包](https://docs.eew.cryville.world/docs/packaging.html#versioning)。
+
+版权所有 © 2026 纪安。本程序以 **GNU LGPL-3.0-or-later** 授权。LGPL 正文见 `LICENSE.txt`，其所引用的 GPL-3.0 正文见 `COPYING.txt`。对应源代码即本仓库；发布的扩展包内同时附带这两份许可证。
 
 三个都要装，版本 `0.1.3.0`：
 

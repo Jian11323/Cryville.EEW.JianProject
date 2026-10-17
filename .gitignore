@@ -6,3 +6,7 @@ dist/
 EewcnJsCT/
 *.user
 *.suo
+refresh-token.json
+**/*secret*
+**/*.pfx
+**/*.pem
