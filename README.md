@@ -4,13 +4,13 @@
 
 版权所有 © 2026 纪安。本程序以 **GNU LGPL-3.0-or-later** 授权。LGPL 正文见 `LICENSE.txt`，其所引用的 GPL-3.0 正文见 `COPYING.txt`。对应源代码即本仓库；发布的扩展包内同时附带这两份许可证。
 
-三个都要装，版本 `0.1.4.1`：
+三个都要装，版本 `0.1.4.2`：
 
 | 组件 | 导入包 |
 | --- | --- |
-| 事件源 | `dist/JianProject.CysTerra-0.1.4.1.zip` |
-| 事物 | `dist/JianProject.CysTerra.Features-0.1.4.1.zip` |
-| TTS | `dist/JianProject.CysTerra.TTS-0.1.4.1.zip` |
+| 事件源 | `dist/JianProject.CysTerra-0.1.4.2.zip` |
+| 事物 | `dist/JianProject.CysTerra.Features-0.1.4.2.zip` |
+| TTS | `dist/JianProject.CysTerra.TTS-0.1.4.2.zip` |
 
 每个 zip 的主 dll 在根目录，可直接导入。
 
