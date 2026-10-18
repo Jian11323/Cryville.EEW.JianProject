@@ -12,7 +12,7 @@ namespace JianProject.CysTerra {
 			}
 
 			var type = FirstText(root, "type");
-			if (type == "heartbeat" || type == "pong" || type == "error" || type == "starting") {
+			if (type == "heartbeat" || type == "pong" || type == "error" || type == "starting" || type == "initial") {
 				yield break;
 			}
 

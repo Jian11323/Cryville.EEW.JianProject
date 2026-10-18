@@ -13,7 +13,7 @@ namespace JianProject.CysTerra.TTS {
 			var res = lres.RootMessageStringSet;
 
 			var spoken = new StringBuilder();
-			spoken.Append(string.Format(culture, res.GetStringRequired("TtsLead"), JianSources.AuthorityLabel(culture, e.Agency, e.ForwardAgency)));
+			spoken.Append(string.Format(culture, res.GetStringRequired("TtsLead"), JianSources.AuthoritySpeechLabel(culture, e.Agency, e.ForwardAgency)));
 			spoken.Append(res.GetStringRequired(TitleKey(e)));
 			var place = e.PlaceZh ?? e.Place ?? e.Title;
 			if (!string.IsNullOrEmpty(place)) {
@@ -32,15 +32,52 @@ namespace JianProject.CysTerra.TTS {
 				spoken.Append(string.Format(culture, res.GetStringRequired("TtsDetail"), e.Detail));
 			}
 
+			// CysTerra 文档：数值越小优先级越高；普通 0，紧急 -100。
 			var priority = e.Kind switch {
-				JianKind.EarlyWarning => e.IsCancel ? 5 : 10,
-				JianKind.Tsunami => 15,
-				JianKind.Weather => 30,
-				JianKind.Bulletin => 40,
-				_ => 50,
+				JianKind.EarlyWarning => e.IsCancel ? -50 : -100,
+				JianKind.Tsunami => -90,
+				JianKind.Weather => 0,
+				JianKind.Bulletin => 0,
+				_ => 10,
 			};
 
-			return new TTSEntry(culture, res.GetStringRequired("TtsRepeatTitle"), spoken.ToString(), priority);
+			return new TTSEntry(culture, res.GetStringRequired("TtsRepeatTitle"), spoken.ToString(), priority, SoundFor(e));
+		}
+
+		static string? SoundFor(JianEvent e) {
+			if (e.Kind == JianKind.EarlyWarning) {
+				if (e.IsCancel) {
+					return "eew_update_cancel";
+				}
+				if (e.Serial is int serial && serial > 1) {
+					return "eew_update";
+				}
+				return IntensitySound(e.Intensity);
+			}
+			if (e.Kind == JianKind.Bulletin) {
+				return "eq";
+			}
+			return "ev";
+		}
+
+		static string IntensitySound(string? intensity) {
+			if (string.IsNullOrEmpty(intensity)) {
+				return "eew_2";
+			}
+			var t = intensity.Trim();
+			if (t.Contains("7") || t.Contains("烈")) {
+				return "eew_5";
+			}
+			if (t.Contains("6") || t.Contains("强")) {
+				return "eew_4";
+			}
+			if (t.Contains("5") || t.Contains("中")) {
+				return "eew_3";
+			}
+			if (t.Contains("4") || t.Contains("弱")) {
+				return "eew_2";
+			}
+			return "eew_1";
 		}
 
 		static bool IsJmaEew(string agency) {

@@ -93,9 +93,19 @@ namespace JianProject.CysTerra {
 		}
 
 		public static string AuthorityLabel(CultureInfo culture, string agency, string? forward) {
+			return AuthorityName(culture, agency, forward, "AuthorityNames");
+		}
+
+		/// <summary>TTS 用机构全称（卡片仍用 AuthorityNames 缩写）。</summary>
+		public static string AuthoritySpeechLabel(CultureInfo culture, string agency, string? forward) {
+			return AuthorityName(culture, agency, forward, "AuthoritySpeechNames");
+		}
+
+		static string AuthorityName(CultureInfo culture, string agency, string? forward, string setKey) {
 			using var lres = new LocalizedResource("", ref culture);
 			var res = lres.RootMessageStringSet;
-			var name = res.GetStringSetRequired("AuthorityNames").GetString(Flag(agency).ToString())
+			var name = res.GetStringSetRequired(setKey).GetString(Flag(agency).ToString())
+				?? res.GetStringSetRequired("AuthorityNames").GetString(Flag(agency).ToString())
 				?? agency;
 			var head = Head(agency);
 			if (head == "emsc" && !string.IsNullOrWhiteSpace(forward)
