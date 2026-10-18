@@ -1,8 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using Cryville.EEW;
 
-namespace Cryville.EEW.JianProject {
+namespace JianProject.CysTerra {
 	public static class SharedResources {
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public static string? SourceName([NotNull] ref CultureInfo? culture) {

@@ -1,7 +1,8 @@
 using System;
 using static Cryville.EEW.TagTypeKeys;
+using Cryville.EEW;
 
-namespace Cryville.EEW.JianProject {
+namespace JianProject.CysTerra {
 	/// <summary>
 	/// Maps agency id to the CysTerra intensity subtype used for list colors and feature tags.
 	/// </summary>

@@ -1,10 +1,11 @@
 using Cryville.Common.Compat;
-using Cryville.EEW.JianProject;
+using JianProject.CysTerra;
 using Cryville.EEW.TTS;
 using System.Globalization;
 using System.Text;
+using Cryville.EEW;
 
-namespace Cryville.EEW.JianProject.TTS {
+namespace JianProject.CysTerra.TTS {
 	public sealed class JianTtsGenerator : IContextedGenerator<JianEvent, ITTSMessageGeneratorContext, TTSEntry?> {
 		public TTSEntry? Generate(JianEvent e, ITTSMessageGeneratorContext? context, ref CultureInfo culture) {
 			ThrowHelper.ThrowIfNull(e);
@@ -42,9 +43,17 @@ namespace Cryville.EEW.JianProject.TTS {
 			return new TTSEntry(culture, res.GetStringRequired("TtsRepeatTitle"), spoken.ToString(), priority);
 		}
 
+		static bool IsJmaEew(string agency) {
+			var head = agency.Trim().ToLowerInvariant().Replace('_', '-').Split(':')[0];
+			return head == "jma-eew";
+		}
+
 		static string TitleKey(JianEvent e) {
 			if (e.IsCancel) {
 				return e.Kind == JianKind.Tsunami ? "TitleTsunamiCancel" : "TitleCancel";
+			}
+			if (e.Kind == JianKind.EarlyWarning && IsJmaEew(e.Agency)) {
+				return e.IsWarn ? "TitleJmaEewWarning" : "TitleJmaEewForecast";
 			}
 			return e.Kind switch {
 				JianKind.EarlyWarning => "TitleEew",

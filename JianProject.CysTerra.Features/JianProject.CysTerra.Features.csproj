@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>0.1.3.0</Version>
+    <Version>0.1.4.0</Version>
     <IsExtensionProject>true</IsExtensionProject>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
-    <RootNamespace>Cryville.EEW.JianProject.Features</RootNamespace>
-    <AssemblyName>Cryville.EEW.JianProject.Features</AssemblyName>
+    <RootNamespace>JianProject.CysTerra.Features</RootNamespace>
+    <AssemblyName>JianProject.CysTerra.Features</AssemblyName>
     <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
     <Description>用于生成 Jian Project API 事件详情的组件。</Description>
   </PropertyGroup>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cryville.EEW.JianProject\Cryville.EEW.JianProject.csproj" Private="false" />
+    <ProjectReference Include="..\JianProject.CysTerra\JianProject.CysTerra.csproj" Private="false" />
   </ItemGroup>
 
   <ItemGroup>

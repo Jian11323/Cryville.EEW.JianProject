@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>0.1.3.0</Version>
+    <Version>0.1.4.0</Version>
     <IsExtensionProject>true</IsExtensionProject>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
-    <RootNamespace>Cryville.EEW.JianProject</RootNamespace>
-    <AssemblyName>Cryville.EEW.JianProject</AssemblyName>
+    <RootNamespace>JianProject.CysTerra</RootNamespace>
+    <AssemblyName>JianProject.CysTerra</AssemblyName>
     <PackageLicenseExpression>LGPL-3.0-or-later</PackageLicenseExpression>
     <Description>用于接收及处理 Jian Project API 来源信息的核心组件。</Description>
   </PropertyGroup>

@@ -2,8 +2,9 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
+using Cryville.EEW;
 
-namespace Cryville.EEW.JianProject {
+namespace JianProject.CysTerra {
 	/// <summary>
 	/// lk_ 只换一次长期 rt_ 并落盘；连接只用 rt_ 换约 1 小时的 at_，过期后再换。
 	/// </summary>
@@ -68,9 +69,19 @@ namespace Cryville.EEW.JianProject {
 		static string StorePath() {
 			var dir = Path.Combine(
 				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-				"Cryville", "EEW", "JianProject");
+				"JianProject", "CysTerra");
 			Directory.CreateDirectory(dir);
-			return Path.Combine(dir, "refresh-token.json");
+			var path = Path.Combine(dir, "refresh-token.json");
+			if (!File.Exists(path)) {
+				// 兼容旧版 Cryville.EEW.JianProject 落盘位置
+				var legacy = Path.Combine(
+					Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+					"Cryville", "EEW", "JianProject", "refresh-token.json");
+				if (File.Exists(legacy)) {
+					File.Copy(legacy, path);
+				}
+			}
+			return path;
 		}
 
 		static (string Login, string Refresh) Read() {

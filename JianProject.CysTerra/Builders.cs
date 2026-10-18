@@ -6,8 +6,9 @@ using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using Cryville.EEW;
 
-namespace Cryville.EEW.JianProject {
+namespace JianProject.CysTerra {
 	[Export(typeof(IBuilder<ISourceWorker>))]
 	public sealed class JianWsWorkerBuilder : IBuilder<JianWsWorker>, INotifyPropertyChanged {
 		public string? GetName([NotNull] ref CultureInfo? culture) => SharedResources.SourceName(ref culture);

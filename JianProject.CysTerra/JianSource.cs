@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using Cryville.EEW;
 
-namespace Cryville.EEW.JianProject {
+namespace JianProject.CysTerra {
 	public enum JianSource {
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		[Browsable(false)]

@@ -10,8 +10,9 @@ using System.Net.WebSockets;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Cryville.EEW;
 
-namespace Cryville.EEW.JianProject {
+namespace JianProject.CysTerra {
 	public sealed class JianWsWorker : WebSocketWorker, ISourceWorker, IPropertiesHolder {
 		readonly string _credential;
 		readonly Action<string>? _saveRefresh;
@@ -87,7 +88,7 @@ namespace Cryville.EEW.JianProject {
 			return builder.Uri;
 		}
 
-		protected override void OnHeartbeat() => Heartbeat?.Invoke(this, EEW.Heartbeat.Instance);
+		protected override void OnHeartbeat() => Heartbeat?.Invoke(this, Cryville.EEW.Heartbeat.Instance);
 		protected override void OnError(Exception ex) => ErrorEmitted?.Invoke(this, ex);
 
 	}

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json;
 
-namespace Cryville.EEW.JianProject {
+namespace JianProject.CysTerra {
 	public static class JianParser {
 		public static IEnumerable<JianEvent> Parse(JsonElement root, Func<string, bool>? accept) {
 			if (root.ValueKind != JsonValueKind.Object) {
@@ -84,6 +84,10 @@ namespace Cryville.EEW.JianProject {
 				|| Contains(place, "仮定")
 				|| Contains(place, "調査中")
 				|| Contains(place, "调查中");
+			var warn = Flag(data, "isWarn", "is_warn", "warn")
+				|| Contains(infoType, "警報") || Contains(infoType, "警报")
+				|| Contains(title, "警報") || Contains(title, "警报")
+				|| (infoType != null && infoType.Equals("Warning", StringComparison.OrdinalIgnoreCase));
 
 			if (kind == JianKind.Other && place == null && title == null && magnitude == null && detail == null) {
 				return null;
@@ -93,7 +97,7 @@ namespace Cryville.EEW.JianProject {
 			var unit = eventId ?? BuildUnit(agency, origin, latitude, longitude, place, title);
 			var fingerprint = string.Join("|",
 				agency, unit, serial?.ToString(CultureInfo.InvariantCulture) ?? "",
-				cancel ? "1" : "0", final ? "1" : "0",
+				cancel ? "1" : "0", final ? "1" : "0", warn ? "1" : "0",
 				Fmt(magnitude), Fmt(depth), Fmt(latitude), Fmt(longitude),
 				place ?? "", placeZh ?? "", forward ?? "", title ?? "", intensity ?? "", infoType ?? "", detail ?? "");
 
@@ -105,6 +109,7 @@ namespace Cryville.EEW.JianProject {
 				IsCancel = cancel,
 				IsFinal = final,
 				IsAssumption = assumption,
+				IsWarn = warn,
 				Place = place,
 				PlaceZh = placeZh,
 				ForwardAgency = forward,

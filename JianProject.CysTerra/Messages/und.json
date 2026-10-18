@@ -21,6 +21,8 @@
 		"TitleCancel": "取消报",
 		"TitleEew": "地震预警",
 		"TitleEewUpdate": "地震预警更新",
+		"TitleJmaEewForecast": "紧急地震速报（预报）",
+		"TitleJmaEewWarning": "紧急地震速报（警报）",
 		"TitleOther": "灾害情报",
 		"TitleTsunami": "海啸情报",
 		"TitleTsunamiCancel": "海啸情报解除",

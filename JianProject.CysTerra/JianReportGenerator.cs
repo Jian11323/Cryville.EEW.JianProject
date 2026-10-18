@@ -2,8 +2,9 @@ using Cryville.Common.Compat;
 using Cryville.EEW.Report;
 using System;
 using System.Globalization;
+using Cryville.EEW;
 
-namespace Cryville.EEW.JianProject {
+namespace JianProject.CysTerra {
 	public sealed class JianReportGenerator : IContextedGenerator<JianEvent, IReportGeneratorContext, ReportModel> {
 		public ReportModel Generate(JianEvent e, IReportGeneratorContext? context, ref CultureInfo culture) {
 			ThrowHelper.ThrowIfNull(e);
@@ -98,11 +99,21 @@ namespace Cryville.EEW.JianProject {
 			return result;
 		}
 
+		static bool IsJmaEew(string agency) {
+			var head = agency.Trim().ToLowerInvariant().Replace('_', '-').Split(':')[0];
+			return head == "jma-eew";
+		}
+
 		static string TitleKey(JianEvent e) {
 			if (e.IsCancel) {
 				return e.Kind == JianKind.Tsunami ? "TitleTsunamiCancel" : "TitleCancel";
 			}
+			if (e.Kind == JianKind.EarlyWarning && IsJmaEew(e.Agency)) {
+				// 对齐 Wolfx / Fan Studio：紧急地震速报（预报/警报），不写「地震预警更新」
+				return e.IsWarn ? "TitleJmaEewWarning" : "TitleJmaEewForecast";
+			}
 			return e.Kind switch {
+				// CEA / CWA / KMA / ShakeAlert 等：地震预警（续报用「更新」）
 				JianKind.EarlyWarning => e.Serial is > 1 ? "TitleEewUpdate" : "TitleEew",
 				JianKind.Bulletin => "TitleBulletin",
 				JianKind.Tsunami => "TitleTsunami",

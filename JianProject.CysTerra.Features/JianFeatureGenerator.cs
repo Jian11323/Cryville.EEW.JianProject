@@ -1,12 +1,13 @@
 using Cryville.Common.Compat;
 using Cryville.EEW.Features;
-using Cryville.EEW.JianProject;
+using JianProject.CysTerra;
 using Cryville.Measure;
 using System;
 using System.Globalization;
 using static Cryville.EEW.TagTypeKeys;
+using Cryville.EEW;
 
-namespace Cryville.EEW.JianProject.Features {
+namespace JianProject.CysTerra.Features {
 	public sealed class JianFeatureGenerator : IGenerator<JianEvent, Feature?> {
 		static readonly Unit Kilometre = Units.Metre.WithPrefix(MetricPrefixes.Kilo);
 

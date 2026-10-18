@@ -1,6 +1,6 @@
 using System;
 
-namespace Cryville.EEW.JianProject {
+namespace JianProject.CysTerra {
 	public enum JianKind {
 		EarlyWarning,
 		Bulletin,
@@ -21,6 +21,8 @@ namespace Cryville.EEW.JianProject {
 		public bool IsFinal { get; init; }
 		public bool IsTraining { get; init; }
 		public bool IsAssumption { get; init; }
+		/// <summary>JMA 紧急地震速报（警报）；其它源通常为 false。</summary>
+		public bool IsWarn { get; init; }
 		public string? Place { get; init; }
 		public string? PlaceZh { get; init; }
 		public string? ForwardAgency { get; init; }

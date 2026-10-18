@@ -21,6 +21,8 @@
 		"TitleCancel": "Cancellation",
 		"TitleEew": "Earthquake early warning",
 		"TitleEewUpdate": "Warning update",
+		"TitleJmaEewForecast": "Earthquake Early Warning (Forecast)",
+		"TitleJmaEewWarning": "Earthquake Early Warning (Warning)",
 		"TitleOther": "Hazard report",
 		"TitleTsunami": "Tsunami information",
 		"TitleTsunamiCancel": "Tsunami cancellation",
