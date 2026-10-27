@@ -6,9 +6,19 @@ using System.Text;
 using Cryville.EEW;
 
 namespace JianProject.CysTerra.TTS {
+	/// <summary>按单一数据源生成 TTS；Agency 不匹配时返回 null。</summary>
 	public sealed class JianTtsGenerator : IContextedGenerator<JianEvent, ITTSMessageGeneratorContext, TTSEntry?> {
+		readonly JianSource _source;
+
+		public JianTtsGenerator(JianSource source) {
+			_source = source;
+		}
+
 		public TTSEntry? Generate(JianEvent e, ITTSMessageGeneratorContext? context, ref CultureInfo culture) {
 			ThrowHelper.ThrowIfNull(e);
+			if (JianSources.Resolve(e.Agency) != _source) {
+				return null;
+			}
 			using var lres = new LocalizedResource("", ref culture);
 			var res = lres.RootMessageStringSet;
 
@@ -41,7 +51,10 @@ namespace JianProject.CysTerra.TTS {
 				_ => 10,
 			};
 
-			return new TTSEntry(culture, res.GetStringRequired("TtsRepeatTitle"), spoken.ToString(), priority, SoundFor(e));
+			CultureInfo? cultureForName = culture;
+			var repeatTitle = SharedResources.SourceName(_source.ToString(), ref cultureForName)
+				?? res.GetStringRequired("TtsRepeatTitle");
+			return new TTSEntry(culture, repeatTitle, spoken.ToString(), priority, SoundFor(e));
 		}
 
 		static string? SoundFor(JianEvent e) {

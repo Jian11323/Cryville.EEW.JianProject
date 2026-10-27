@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>0.1.4.2</Version>
+    <Version>0.1.4.3</Version>
     <IsExtensionProject>true</IsExtensionProject>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
@@ -14,9 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cryville.EEW" Version="0.8.12" PrivateAssets="contentfiles;analyzers;build;runtime" ExcludeAssets="runtime" />
-    <PackageReference Include="Cryville.EEW.TagTypeKeys" Version="0.8.1" PrivateAssets="contentfiles;analyzers;build;runtime" ExcludeAssets="runtime" />
-    <PackageReference Include="Cryville.EEW.Analyzer" Version="0.8.0" PrivateAssets="contentfiles;analyzers;build;runtime" ExcludeAssets="runtime" />
+    <!-- 接口包：ExcludeAssets=runtime 与 0.8.14 targets 等价；SDK10 restore 需写在 csproj -->
+    <PackageReference Include="Cryville.EEW" Version="0.8.14" ExcludeAssets="runtime" />
+    <PackageReference Include="Cryville.EEW.TagTypeKeys" Version="0.8.1" ExcludeAssets="runtime" />
+    <PackageReference Include="Cryville.EEW.Analyzer" Version="0.8.7" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup>

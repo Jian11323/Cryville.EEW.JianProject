@@ -10,9 +10,17 @@ using Cryville.EEW;
 namespace JianProject.CysTerra.Features {
 	public sealed class JianFeatureGenerator : IGenerator<JianEvent, Feature?> {
 		static readonly Unit Kilometre = Units.Metre.WithPrefix(MetricPrefixes.Kilo);
+		readonly JianSource _source;
+
+		public JianFeatureGenerator(JianSource source) {
+			_source = source;
+		}
 
 		public Feature? Generate(JianEvent e, ref CultureInfo culture) {
 			ThrowHelper.ThrowIfNull(e);
+			if (JianSources.Resolve(e.Agency) != _source) {
+				return null;
+			}
 
 			var kind = e.Kind switch {
 				JianKind.Tsunami => Tsunami,

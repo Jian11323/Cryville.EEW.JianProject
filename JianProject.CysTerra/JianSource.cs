@@ -121,6 +121,9 @@ namespace JianProject.CysTerra {
 			return colon >= 0 ? head.Substring(0, colon) : head;
 		}
 
+		/// <summary>将上游 type/agency 映射到筛选项枚举。</summary>
+		public static JianSource Resolve(string agency) => Flag(agency);
+
 		static JianSource Flag(string agency) {
 			return Head(agency) switch {
 				"cea" => JianSource.Cea,

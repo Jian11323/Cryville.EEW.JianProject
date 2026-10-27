@@ -5,9 +5,18 @@ using System.Globalization;
 using Cryville.EEW;
 
 namespace JianProject.CysTerra {
-	public sealed class JianReportGenerator : IContextedGenerator<JianEvent, IReportGeneratorContext, ReportModel> {
-		public ReportModel Generate(JianEvent e, IReportGeneratorContext? context, ref CultureInfo culture) {
+	public sealed class JianReportGenerator : IContextedGenerator<JianEvent, IReportGeneratorContext, ReportModel?> {
+		readonly JianSource _source;
+
+		public JianReportGenerator(JianSource source) {
+			_source = source;
+		}
+
+		public ReportModel? Generate(JianEvent e, IReportGeneratorContext? context, ref CultureInfo culture) {
 			ThrowHelper.ThrowIfNull(e);
+			if (JianSources.Resolve(e.Agency) != _source) {
+				return null;
+			}
 			context ??= EmptyReportGeneratorContext.Instance;
 
 			using var lres = new LocalizedResource("", ref culture);
