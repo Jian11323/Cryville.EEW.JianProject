@@ -6,13 +6,13 @@
 
 ## 安装
 
-扩展仅适用于 CysTerra **通用版**（Android 版不支持扩展）。以下三个包均需安装，版本 **0.1.4.3**：
+扩展仅适用于 CysTerra **通用版**（Android 版不支持扩展）。以下三个包均需安装，版本 **0.1.4.4**：
 
 | 组件 | 导入包 |
 | --- | --- |
-| 事件源 + 事件摘要 | `JianProject.CysTerra-0.1.4.3.zip` |
-| 事件详情 | `JianProject.CysTerra.Features-0.1.4.3.zip` |
-| 语音消息 | `JianProject.CysTerra.TTS-0.1.4.3.zip` |
+| 事件源 + 事件摘要 | `JianProject.CysTerra-0.1.4.4.zip` |
+| 事件详情 | `JianProject.CysTerra.Features-0.1.4.4.zip` |
+| 语音消息 | `JianProject.CysTerra.TTS-0.1.4.4.zip` |
 
 每个 zip 的主 dll 位于根目录，可直接导入。发布附件见本仓库 [Releases](https://github.com/Jian11323/JianProject.CysTerra/releases)。
 

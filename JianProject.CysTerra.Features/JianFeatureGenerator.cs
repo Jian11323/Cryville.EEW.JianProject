@@ -31,7 +31,7 @@ namespace JianProject.CysTerra.Features {
 
 			var feature = new Feature {
 				{ Is, e.Kind is JianKind.EarlyWarning or JianKind.Bulletin ? Earthquake : kind },
-				{ Ongoing, !e.IsCancel && e.Kind != JianKind.Bulletin },
+				{ Ongoing, !e.IsCancel && !e.IsFinal && e.Kind != JianKind.Bulletin },
 				{ Source, e.Agency },
 			};
 

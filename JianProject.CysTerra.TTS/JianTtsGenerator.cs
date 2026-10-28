@@ -62,6 +62,9 @@ namespace JianProject.CysTerra.TTS {
 				if (e.IsCancel) {
 					return "eew_update_cancel";
 				}
+				if (e.IsFinal) {
+					return "eew_update_final";
+				}
 				if (e.Serial is int serial && serial > 1) {
 					return "eew_update";
 				}

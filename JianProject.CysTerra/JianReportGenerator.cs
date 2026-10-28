@@ -45,9 +45,11 @@ namespace JianProject.CysTerra {
 
 			if (e.Kind == JianKind.EarlyWarning || e.Kind == JianKind.Tsunami) {
 				var issued = e.OriginUtc ?? DateTime.UtcNow;
-				result.InvalidatedTime = new DateTimeOffset(DateTime.SpecifyKind(issued, DateTimeKind.Utc) + TimeSpan.FromMinutes(e.IsFinal ? 10 : 3));
+				result.InvalidatedTime = new DateTimeOffset(
+					DateTime.SpecifyKind(issued, DateTimeKind.Utc) + TimeSpan.FromMinutes(e.IsFinal || e.IsCancel ? 10 : 3));
 			}
 			if (e.IsCancel) {
+				// 取消报立即失效展示窗口，同时保留上方较长 Invalidated 下限作兜底
 				result.InvalidatedTime = new DateTimeOffset(DateTime.UtcNow);
 			}
 
