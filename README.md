@@ -6,13 +6,13 @@
 
 ## 安装
 
-扩展仅适用于 CysTerra **通用版**（Android 版不支持扩展）。以下三个包均需安装，版本 **0.1.4.4**：
+扩展仅适用于 CysTerra **通用版**（Android 版不支持扩展）。以下三个包均需安装，版本 **0.1.4.5**：
 
 | 组件 | 导入包 |
 | --- | --- |
-| 事件源 + 事件摘要 | `JianProject.CysTerra-0.1.4.4.zip` |
-| 事件详情 | `JianProject.CysTerra.Features-0.1.4.4.zip` |
-| 语音消息 | `JianProject.CysTerra.TTS-0.1.4.4.zip` |
+| 事件源 + 事件摘要 | `JianProject.CysTerra-0.1.4.5.zip` |
+| 事件详情 | `JianProject.CysTerra.Features-0.1.4.5.zip` |
+| 语音消息 | `JianProject.CysTerra.TTS-0.1.4.5.zip` |
 
 每个 zip 的主 dll 位于根目录，可直接导入。发布附件见本仓库 [Releases](https://github.com/Jian11323/JianProject.CysTerra/releases)。
 
@@ -22,7 +22,8 @@
 | --- | --- |
 | 认证密钥 | 填写邮件内 Token；扩展会自动置换并保存 |
 | 筛选项 | 按来源开关，默认全部开启 |
-| WebSocket | 固定 `wss://api.sismotide.top/all`，设置中不展示 |
+| WebSocket | 默认 `/all`；设置可选主服/备服/自动切换（`api.sismotide.top` ↔ `api.jianproject.cloud`） |
+| API 入口 | 自动（失败切换）/ 主服 / 备服；鉴权仍走 `auth.sismotide.top` |
 
 事件摘要、事件详情、TTS 均按数据源单独导出（名称形如「Jian Project（…）」），可分别开关。
 

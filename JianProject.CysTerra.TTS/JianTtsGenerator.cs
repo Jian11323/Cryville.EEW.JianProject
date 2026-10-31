@@ -51,9 +51,11 @@ namespace JianProject.CysTerra.TTS {
 				_ => 10,
 			};
 
-			CultureInfo? cultureForName = culture;
-			var repeatTitle = SharedResources.SourceName(_source.ToString(), ref cultureForName)
-				?? res.GetStringRequired("TtsRepeatTitle");
+			// 重复标题只用机构中文名，避免 TTS 朗读英文 "Jian Project"
+			var repeatTitle = JianSources.AuthoritySpeechLabel(culture, e.Agency, e.ForwardAgency);
+			if (string.IsNullOrWhiteSpace(repeatTitle)) {
+				repeatTitle = res.GetStringRequired("TtsRepeatTitle");
+			}
 			return new TTSEntry(culture, repeatTitle, spoken.ToString(), priority, SoundFor(e));
 		}
 

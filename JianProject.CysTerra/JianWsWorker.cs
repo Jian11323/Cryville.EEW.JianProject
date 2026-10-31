@@ -16,14 +16,16 @@ namespace JianProject.CysTerra {
 	public sealed class JianWsWorker : WebSocketWorker, ISourceWorker, IPropertiesHolder {
 		readonly string _credential;
 		readonly Action<string>? _saveRefresh;
+		readonly JianEndpointMode _mode;
 		readonly Dictionary<string, string> _seen = new();
 		ISet<JianSource> _filter = JianSources.DefaultAll();
 		// Fan Studio /all 首包为 initial 快照；本站 /all 首包为 type=all。连接后第一帧业务数据整帧丢弃（只记指纹，不进卡片/TTS）。
 		bool _dropFirstBusiness = true;
 
-		public JianWsWorker(Uri uri, string credential, Action<string>? saveRefresh) : base(uri) {
+		public JianWsWorker(Uri uri, string credential, JianEndpointMode mode, Action<string>? saveRefresh) : base(uri) {
 			_credential = credential;
 			_saveRefresh = saveRefresh;
+			_mode = mode;
 		}
 
 		[Obsolete("Filter is always whitelist.")]
@@ -41,7 +43,7 @@ namespace JianProject.CysTerra {
 		public IEnumerable<PropertyDescriptor> GetProperties() =>
 			TypeDescriptor.GetProperties(this).OfType<PropertyDescriptor>().Where(p => p.IsBrowsable && !p.IsReadOnly);
 
-		protected override Uri GetUri() => WithKey(InitialUri, JianAuth.AccessFor(_credential, _saveRefresh));
+		protected override Uri GetUri() => WithKey(JianEndpoint.Rewrite(InitialUri, _mode), JianAuth.AccessFor(_credential, _saveRefresh));
 
 		public string? GetName([NotNull] ref CultureInfo? culture) => SharedResources.SourceName(ref culture);
 
@@ -51,6 +53,7 @@ namespace JianProject.CysTerra {
 
 		protected override Task OnConnected(CancellationToken cancellationToken) {
 			_dropFirstBusiness = true;
+			JianEndpoint.NoteResult(true, _mode);
 			return Task.CompletedTask;
 		}
 
@@ -115,7 +118,10 @@ namespace JianProject.CysTerra {
 		}
 
 		protected override void OnHeartbeat() => Heartbeat?.Invoke(this, Cryville.EEW.Heartbeat.Instance);
-		protected override void OnError(Exception ex) => ErrorEmitted?.Invoke(this, ex);
+		protected override void OnError(Exception ex) {
+			JianEndpoint.NoteResult(false, _mode);
+			ErrorEmitted?.Invoke(this, ex);
+		}
 
 	}
 }

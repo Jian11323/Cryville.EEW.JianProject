@@ -24,6 +24,11 @@ namespace JianProject.CysTerra {
 		[LocalizableDescription("PDAccessKey")]
 		public string? AccessKey { get; set; }
 
+		[JsonSerializedProperty]
+		[LocalizableDisplayName("PNEndpointMode")]
+		[LocalizableDescription("PDEndpointMode")]
+		public JianEndpointMode EndpointMode { get; set; } = JianEndpointMode.Auto;
+
 		public event PropertyChangedEventHandler? PropertyChanged;
 
 		public JianWsWorker Build(ref CultureInfo? culture) {
@@ -35,7 +40,9 @@ namespace JianProject.CysTerra {
 			if (string.IsNullOrWhiteSpace(AccessKey)) {
 				throw new SourceWorkerClientException("认证密钥不能为空。");
 			}
-			return new JianWsWorker(baseUri, AccessKey.Trim(), refresh => {
+			JianEndpoint.Reset(EndpointMode);
+			baseUri = JianEndpoint.Rewrite(baseUri, EndpointMode);
+			return new JianWsWorker(baseUri, AccessKey.Trim(), EndpointMode, refresh => {
 				if (string.Equals(AccessKey, refresh, StringComparison.Ordinal)) {
 					return;
 				}

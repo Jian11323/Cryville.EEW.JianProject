@@ -8,6 +8,8 @@
 		"PDFilter": "Event sources to receive.",
 		"PNAccessKey": "Authentication key",
 		"PNFilter": "Filter",
+		"PNEndpointMode": "API endpoint",
+		"PDEndpointMode": "Auto fails over between primary (api.sismotide.top) and backup (api.jianproject.cloud). Auth stays on auth.sismotide.top.",
 		"PNWebSocketUri": "WebSocket URI",
 		"AuthorityNameForwarded": "{0} | {1}",
 		"PropertyDepth": "Depth",
@@ -29,6 +31,13 @@
 		"TitleWeather": "Weather warning"
 	},
 	"StringSets": {
+		"EndpointModes": {
+			"Strings": {
+				"Auto": "Auto (failover)",
+				"Primary": "Primary",
+				"Backup": "Backup"
+			}
+		},
 		"AuthorityNames": {
 			"Strings": {
 				"Cea": "中国地震预警网",
