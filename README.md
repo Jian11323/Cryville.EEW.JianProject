@@ -14,7 +14,7 @@
 | 事件详情 | `JianProject.CysTerra.Features-0.1.4.5.zip` |
 | 语音消息 | `JianProject.CysTerra.TTS-0.1.4.5.zip` |
 
-每个 zip 的主 dll 位于根目录，可直接导入。发布附件见本仓库 [Releases](https://github.com/Jian11323/JianProject.CysTerra/releases)。
+每个 zip 的主 dll 与对应 `*.deps.json` 须位于根目录（从 `bin/ext/Release` 打包），可直接导入；缺少 deps.json 会导致 CysTerra 提示「未在目录中找到扩展」。发布附件见本仓库 [Releases](https://github.com/Jian11323/JianProject.CysTerra/releases)。
 
 ## 配置
 
