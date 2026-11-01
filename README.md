@@ -6,13 +6,13 @@
 
 ## 安装
 
-扩展仅适用于 CysTerra **通用版**（Android 版不支持扩展）。以下三个包均需安装，版本 **0.1.4.6**：
+扩展仅适用于 CysTerra **通用版**（Android 版不支持扩展）。以下三个包均需安装，版本 **0.1.4.7**：
 
 | 组件 | 导入包 |
 | --- | --- |
-| 事件源 + 事件摘要 | `JianProject.CysTerra-0.1.4.6.zip` |
-| 事件详情 | `JianProject.CysTerra.Features-0.1.4.6.zip` |
-| 语音消息 | `JianProject.CysTerra.TTS-0.1.4.6.zip` |
+| 事件源 + 事件摘要 | `JianProject.CysTerra-0.1.4.7.zip` |
+| 事件详情 | `JianProject.CysTerra.Features-0.1.4.7.zip` |
+| 语音消息 | `JianProject.CysTerra.TTS-0.1.4.7.zip` |
 
 每个 zip 的主 dll 与对应 `*.deps.json` 须位于根目录（从 `bin/ext/Release` 打包），可直接导入；缺少 deps.json 会导致 CysTerra 提示「未在目录中找到扩展」。发布附件见本仓库 [Releases](https://github.com/Jian11323/JianProject.CysTerra/releases)。
 
@@ -30,6 +30,7 @@
 ## 行为说明
 
 - 连接后不发送列表指令。
+- 「自动切换」：`WebSocketWorker` 无内置切服；在 `OnError` 识别 `SourceWorkerNetworkException`，约 60 秒内累计 3 次则切换主/备主机，由下次 `GetUri` 生效。
 - 丢弃 `type=all` / `initial` 快照帧；连接后首帧业务数据整帧丢弃，避免 TTS 轰炸。
 - 卡片机构名使用正式缩写（EMSC 可带测定机构，如 `EMSC | GFZ`）；地名优先 `placename_zh`。
 - 上游没有的震级、深度、坐标不会补写。

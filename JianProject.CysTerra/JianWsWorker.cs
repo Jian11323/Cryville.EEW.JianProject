@@ -44,17 +44,10 @@ namespace JianProject.CysTerra {
 			TypeDescriptor.GetProperties(this).OfType<PropertyDescriptor>().Where(p => p.IsBrowsable && !p.IsReadOnly);
 
 		protected override Uri GetUri() {
-			try {
-				var host = JianEndpoint.ActiveHost(_mode);
-				var rewritten = JianEndpoint.Rewrite(InitialUri, _mode);
-				var key = JianAuth.AccessFor(_credential, _saveRefresh, host);
-				return WithKey(rewritten, key);
-			}
-			catch (Exception) {
-				// 换票失败也计入自动切换（主站鉴权不可达时切备服换票口）
-				JianEndpoint.NoteResult(false, _mode);
-				throw;
-			}
+			var host = JianEndpoint.ActiveHost(_mode);
+			var rewritten = JianEndpoint.Rewrite(InitialUri, _mode);
+			var key = JianAuth.AccessFor(_credential, _saveRefresh, host);
+			return WithKey(rewritten, key);
 		}
 
 		public string? GetName([NotNull] ref CultureInfo? culture) => SharedResources.SourceName(ref culture);
@@ -65,7 +58,7 @@ namespace JianProject.CysTerra {
 
 		protected override Task OnConnected(CancellationToken cancellationToken) {
 			_dropFirstBusiness = true;
-			JianEndpoint.NoteResult(true, _mode);
+			JianEndpoint.NoteSuccess(_mode);
 			return Task.CompletedTask;
 		}
 
@@ -130,10 +123,29 @@ namespace JianProject.CysTerra {
 		}
 
 		protected override void OnHeartbeat() => Heartbeat?.Invoke(this, Cryville.EEW.Heartbeat.Instance);
+
 		protected override void OnError(Exception ex) {
-			JianEndpoint.NoteResult(false, _mode);
+			// WebSocketWorker 无内置切服；按官方建议仅在网络异常上累计，短时间多次后切换下次 GetUri 主机。
+			if (_mode == JianEndpointMode.Auto && IsNetworkError(ex)) {
+				JianEndpoint.NoteNetworkFailure(_mode);
+			}
 			ErrorEmitted?.Invoke(this, ex);
 		}
 
+		static bool IsNetworkError(Exception? ex) {
+			for (var e = ex; e != null; e = e.InnerException) {
+				if (e is SourceWorkerNetworkException) {
+					return true;
+				}
+				if (e is AggregateException agg) {
+					foreach (var inner in agg.InnerExceptions) {
+						if (IsNetworkError(inner)) {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
 	}
 }

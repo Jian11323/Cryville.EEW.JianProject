@@ -31,10 +31,21 @@ namespace JianProject.CysTerra {
 
 		public static string AccessFor(string credential, Action<string>? saveRefresh, string? apiHost = null) {
 			var value = credential.Trim();
-			if (value.StartsWith("at_", StringComparison.Ordinal)) {
-				return value;
-			}
 			var accessUrl = AccessUrlForApi(apiHost ?? JianEndpoint.PrimaryHost);
+			if (value.StartsWith("at_", StringComparison.Ordinal)) {
+				// 备服票仓不认主站新签发的 at_；有本地 rt_ 则改走备服换票口。
+				if (string.Equals(accessUrl, BackupAccessUrl, StringComparison.OrdinalIgnoreCase)) {
+					var saved = Read();
+					if (saved.Refresh.StartsWith("rt_", StringComparison.Ordinal)) {
+						value = saved.Refresh;
+					} else {
+						throw new SourceWorkerClientException(
+							"备服务器不能直接使用 at_；请填写 lk_ 或 rt_，由扩展在备服鉴权口换票。");
+					}
+				} else {
+					return value;
+				}
+			}
 			lock (Gate) {
 				var refresh = RefreshLocked(value, saveRefresh);
 				if (_access != null
