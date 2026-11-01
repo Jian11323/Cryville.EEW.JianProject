@@ -39,6 +39,13 @@
 
 开发说明见 [CysTerra 扩展文档](https://docs.eew.cryville.world/) 与 [打包 / 版本](https://docs.eew.cryville.world/docs/packaging.html#versioning)。
 
+## 更新说明
+
+### 0.1.4.6
+
+- 服务器选择：自动切换 / 主服务器 / 备服务器（`api.sismotide.top` ↔ `api.jianproject.cloud`）
+- 备服务器连接与鉴权稳定性
+
 ## 许可证
 
 版权所有 © 2026 纪安。
