@@ -10,7 +10,7 @@ namespace JianProject.CysTerra {
 		[LocalizableDisplayName(nameof(Backup), Path = ["EndpointModes"])] Backup = 2,
 	}
 
-	/// <summary>主服 api.sismotide.top / 备服 api.jianproject.cloud；鉴权仍走 auth.sismotide.top。</summary>
+	/// <summary>主服务器 api.sismotide.top / 备服务器 api.jianproject.cloud；lk→rt 签发固定主站，at_ 随 API 主机走对应鉴权口。</summary>
 	static class JianEndpoint {
 		public const string PrimaryHost = "api.sismotide.top";
 		public const string BackupHost = "api.jianproject.cloud";
@@ -34,6 +34,7 @@ namespace JianProject.CysTerra {
 			} else if (mode == JianEndpointMode.Backup) {
 				Volatile.Write(ref _active, 1);
 			}
+			// Auto：保留当前 _active，不重置到主服务器，避免热重建冲掉已切换状态
 		}
 
 		public static void NoteResult(bool ok, JianEndpointMode mode) {

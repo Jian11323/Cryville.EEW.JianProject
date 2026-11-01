@@ -8,8 +8,8 @@
 		"PDFilter": "Event sources to receive.",
 		"PNAccessKey": "Authentication key",
 		"PNFilter": "Filter",
-		"PNEndpointMode": "API endpoint",
-		"PDEndpointMode": "Auto fails over between primary (api.sismotide.top) and backup (api.jianproject.cloud). Auth stays on auth.sismotide.top.",
+		"PNEndpointMode": "Server",
+		"PDEndpointMode": "",
 		"PNWebSocketUri": "WebSocket URI",
 		"AuthorityNameForwarded": "{0} | {1}",
 		"PropertyDepth": "Depth",
@@ -33,9 +33,9 @@
 	"StringSets": {
 		"EndpointModes": {
 			"Strings": {
-				"Auto": "Auto (failover)",
-				"Primary": "Primary",
-				"Backup": "Backup"
+				"Auto": "Auto switch",
+				"Primary": "Primary server",
+				"Backup": "Backup server"
 			}
 		},
 		"AuthorityNames": {

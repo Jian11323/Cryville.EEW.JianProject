@@ -26,7 +26,6 @@ namespace JianProject.CysTerra {
 
 		[JsonSerializedProperty]
 		[LocalizableDisplayName("PNEndpointMode")]
-		[LocalizableDescription("PDEndpointMode")]
 		public JianEndpointMode EndpointMode { get; set; } = JianEndpointMode.Auto;
 
 		public event PropertyChangedEventHandler? PropertyChanged;

@@ -8,8 +8,8 @@
 		"PDFilter": "要接收的事件源。",
 		"PNAccessKey": "认证密钥",
 		"PNFilter": "筛选项",
-		"PNEndpointMode": "API 入口",
-		"PDEndpointMode": "自动：主服失败切备服；主服 api.sismotide.top；备服 api.jianproject.cloud。鉴权仍走 auth.sismotide.top。",
+		"PNEndpointMode": "服务器选择",
+		"PDEndpointMode": "",
 		"PNWebSocketUri": "WebSocket 地址",
 		"AuthorityNameForwarded": "{0} | {1}",
 		"PropertyDepth": "深度",
@@ -33,9 +33,9 @@
 	"StringSets": {
 		"EndpointModes": {
 			"Strings": {
-				"Auto": "自动（失败切换）",
-				"Primary": "主服",
-				"Backup": "备服"
+				"Auto": "自动切换",
+				"Primary": "主服务器",
+				"Backup": "备服务器"
 			}
 		},
 		"AuthorityNames": {

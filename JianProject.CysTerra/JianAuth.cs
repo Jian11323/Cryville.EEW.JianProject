@@ -6,32 +6,47 @@ using Cryville.EEW;
 
 namespace JianProject.CysTerra {
 	/// <summary>
-	/// lk_ 只换一次长期 rt_ 并落盘；连接只用 rt_ 换约 1 小时的 at_，过期后再换。
+	/// lk_ 只换一次长期 rt_ 并落盘（签发固定主站）；连接用 rt_ 换约 1 小时的 at_。
+	/// 连备服 API 时 at_ 须在备服鉴权口签发，否则备服本地票仓尚未同步主站新 at_ 会判无效。
 	/// </summary>
 	static class JianAuth {
+		const string PrimaryAccessUrl = "https://auth.sismotide.top/api/access";
+		const string BackupAccessUrl = "https://auth.jianproject.cloud/api/access";
 		const string RefreshUrl = "https://auth.sismotide.top/api/refresh";
-		const string AccessUrl = "https://auth.sismotide.top/api/access";
 
 		static readonly HttpClient Http = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
 		static readonly object Gate = new object();
 		static string? _refresh;
 		static string? _access;
+		static string? _accessUrlUsed;
 		static DateTime _accessUntilUtc;
 
-		public static string AccessFor(string credential, Action<string>? saveRefresh) {
+		public static string AccessUrlForApi(string apiHost) {
+			if (!string.IsNullOrEmpty(apiHost)
+				&& apiHost.Equals(JianEndpoint.BackupHost, StringComparison.OrdinalIgnoreCase)) {
+				return BackupAccessUrl;
+			}
+			return PrimaryAccessUrl;
+		}
+
+		public static string AccessFor(string credential, Action<string>? saveRefresh, string? apiHost = null) {
 			var value = credential.Trim();
 			if (value.StartsWith("at_", StringComparison.Ordinal)) {
 				return value;
 			}
+			var accessUrl = AccessUrlForApi(apiHost ?? JianEndpoint.PrimaryHost);
 			lock (Gate) {
 				var refresh = RefreshLocked(value, saveRefresh);
-				if (_access != null && string.Equals(_refresh, refresh, StringComparison.Ordinal)
+				if (_access != null
+					&& string.Equals(_refresh, refresh, StringComparison.Ordinal)
+					&& string.Equals(_accessUrlUsed, accessUrl, StringComparison.OrdinalIgnoreCase)
 					&& DateTime.UtcNow < _accessUntilUtc) {
 					return _access;
 				}
-				var issued = Exchange(AccessUrl, refresh, "at_");
+				var issued = Exchange(accessUrl, refresh, "at_");
 				_refresh = refresh;
 				_access = issued.Token;
+				_accessUrlUsed = accessUrl;
 				var keep = issued.ExpiresSec > 90 ? issued.ExpiresSec - 60 : Math.Max(30, issued.ExpiresSec / 2);
 				_accessUntilUtc = DateTime.UtcNow.AddSeconds(keep);
 				return _access;
@@ -55,6 +70,7 @@ namespace JianProject.CysTerra {
 			var issued = Exchange(RefreshUrl, value, "rt_");
 			Remember(value, issued.Token, saveRefresh);
 			_access = null;
+			_accessUrlUsed = null;
 			return issued.Token;
 		}
 
